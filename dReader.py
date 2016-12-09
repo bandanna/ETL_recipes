@@ -16,10 +16,10 @@ class reader:
 
         with open('edamam_recipes.json') as eda_json:
             self.eda_data = json.load(eda_json)
-            print len(self.eda_data)
+            #print len(self.eda_data)
         with open('spoonacular_recipes.json') as spo_json:
             self.spo_data = json.load(spo_json)
-            print len(self.spo_data)
+            #print len(self.spo_data)
 
         self.db=self.connectToMongoRecipeDB()
 
