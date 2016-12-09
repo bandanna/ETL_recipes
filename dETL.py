@@ -20,8 +20,6 @@ s1 = db.edamam.find()
 s2 = db.spoonacular.find()
 
 print "----Last Insertion----"
-print "edamam %s" % len(s1)
-print "spoonacular %s" % len(s2)
 
 db.drop_collection('finalcollection')
 db.finalcollection.create_index([('title', pymongo.ASCENDING)], unique=True)
