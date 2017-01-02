@@ -3,6 +3,7 @@ import pymongo
 from pymongo import MongoClient
 from fuzzywuzzy import process
 from fuzzywuzzy import fuzz
+import dVARIABLES
 
 
 class reader:
@@ -14,10 +15,10 @@ class reader:
         self.spo_data=''
         self.spotitles=[]
 
-        with open('edamam_recipes.json') as eda_json:
+        with open(dVARIABLES.EDAMAM_RAW) as eda_json:
             self.eda_data = json.load(eda_json)
             #print len(self.eda_data)
-        with open('spoonacular_recipes.json') as spo_json:
+        with open(dVARIABLES.SPOONACULAR_RAW) as spo_json:
             self.spo_data = json.load(spo_json)
             #print len(self.spo_data)
 
@@ -44,6 +45,42 @@ class reader:
         print filetitle ,"are %s" % c
         return col
 
+    def getAllData(self,jsondata,filetitle):
+        c=0
+        col=[]
+        for r in jsondata:
+            #print "******* the length of keys is :%s" % len(r.keys())
+            if r['title']:
+                c+=1
+                doc={}
+                for key in r.keys():
+                    ing_list=[]
+                    #print "-----------"
+                    #print "for key: %s" % key
+                    if key=='title':
+                        #print r[key]
+                        title=r[key]
+                        doc[key]=title
+
+                    elif key=='ingredients':
+                        doc[key]=r[key]
+                        '''
+                        for ing in r[key]:
+                            #print ing['name']
+                            ing_list.append(ing['name'])
+                        ing_list=dict.fromkeys(ing_list).keys()
+                        doc[key]=ing_list
+                        '''
+                    else:
+                        #print r[key]
+                        doc[key]=r[key]
+
+                #print " ============================== "
+                #print doc
+                col.append(doc)
+        print filetitle ,"are %s" % c
+        return col
+
     # Connection to Mongo DB
     def connectToMongoRecipeDB(self):
         try:
@@ -62,9 +99,11 @@ class reader:
         return db
 
     def insertDataToMongo(self):
-        eda_list= self.getTitleAndIngredient(self.eda_data, "edatitles")
-        spo_list=self.getTitleAndIngredient(self.spo_data, "spotitles")
+        #eda_list= self.getTitleAndIngredient(self.eda_data, "edatitles")
+        #spo_list=self.getTitleAndIngredient(self.spo_data, "spotitles")
 
+        eda_list= self.getAllData(self.eda_data, "edatitles")
+        spo_list=self.getAllData(self.spo_data, "spotitles")
         #db= self.connectToMongoRecipeDB()
 
         #drop if collections exist
